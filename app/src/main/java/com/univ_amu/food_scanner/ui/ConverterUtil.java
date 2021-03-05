@@ -6,6 +6,7 @@ import androidx.databinding.BindingAdapter;
 
 import com.univ_amu.food_scanner.R;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -35,4 +36,18 @@ public class ConverterUtil {
 
         return resources.getQuantityString(R.plurals.days_ago, dayCount, dayCount);
     }
+
+    static private DecimalFormat decimalFormat = new DecimalFormat("#.######");
+
+    @BindingAdapter("quantityValue")
+    public static void setQuantityValue(TextView view, double value) {
+        view.setText(decimalFormat.format(value));
+    }
+
+    @BindingAdapter("quantityLevel")
+    public static void setQuantityLevel(TextView view, int level) {
+        view.setPadding(level * 40, 0, 0, 0);
+    }
+
+
 }

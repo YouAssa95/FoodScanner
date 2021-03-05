@@ -1,29 +1,38 @@
 package com.univ_amu.food_scanner.ui;
 
+
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.univ_amu.food_scanner.data.Food;
 import com.univ_amu.food_scanner.databinding.FoodItemBinding;
+import com.univ_amu.food_scanner.databinding.FragmentFoodBinding;
+import com.univ_amu.food_scanner.viewmodels.FoodViewModel;
 
 public class FoodListAdapter extends ListAdapter<Food, FoodListAdapter.ViewHolder> {
 
     FoodListAdapter() {
         super(diffUtilCallback);
     }
-    public Food food;
+
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater layoutInFlater = LayoutInflater.from(parent.getContext());
-        FoodItemBinding binding = FoodItemBinding.inflate(layoutInFlater,parent,  false );
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        FoodItemBinding binding = FoodItemBinding.inflate(layoutInflater, parent, false);
         return new ViewHolder(binding);
     }
+
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -46,6 +55,11 @@ public class FoodListAdapter extends ListAdapter<Food, FoodListAdapter.ViewHolde
             this.food=food;
             this.binding.invalidateAll();
 
+        }
+
+        public void onClick(View view) {
+            NavDirections action = FoodListFragmentDirections.actionFoodListFragmentToFoodFragment(food.code);
+            Navigation.findNavController(binding.getRoot()).navigate(action);
         }
 
     }
