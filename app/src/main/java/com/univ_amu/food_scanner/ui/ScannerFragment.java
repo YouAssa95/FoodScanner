@@ -15,6 +15,7 @@ package com.univ_amu.food_scanner.ui;
         import androidx.annotation.Nullable;
         import androidx.core.content.ContextCompat;
         import androidx.fragment.app.Fragment;
+        import androidx.lifecycle.ViewModelProviders;
         import androidx.navigation.NavDirections;
         import androidx.navigation.Navigation;
 
@@ -24,7 +25,11 @@ package com.univ_amu.food_scanner.ui;
         import com.univ_amu.food_scanner.data.Food;
         import com.univ_amu.food_scanner.data.Repository;
         import com.univ_amu.food_scanner.data.database.Dao;
+        import com.univ_amu.food_scanner.databinding.FragmentFoodBinding;
         import com.univ_amu.food_scanner.databinding.FragmentScannerBinding;
+        import com.univ_amu.food_scanner.viewmodels.FoodViewModel;
+        import com.univ_amu.food_scanner.viewmodels.FoodViewModelFactory;
+        import com.univ_amu.food_scanner.viewmodels.ScannerViewModel;
 
         import java.util.Collections;
         import java.util.concurrent.CountedCompleter;
@@ -32,12 +37,16 @@ package com.univ_amu.food_scanner.ui;
 
 public class ScannerFragment extends Fragment {
 
-    private FragmentScannerBinding binding;
-    private Repository repository;
+    private  FragmentScannerBinding binding;
+    private  ScannerViewModel model;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FragmentScannerBinding binding = FragmentScannerBinding.inflate(inflater, container, false);
-        this.binding=binding;
+        binding = FragmentScannerBinding.inflate(inflater, container, false);
+        binding.setLifecycleOwner(this);
+        model=ViewModelProviders.of(this).get(ScannerViewModel.class);
+        model.downloadedFood.observe(this,this::onDownloadedFood);
+        model.error.observe(this,this::onError);
+        binding.setModel(model);
         return binding.getRoot();
     }
 
@@ -65,17 +74,7 @@ public class ScannerFragment extends Fragment {
         super.onResume();
         binding.scanner.startCamera();
         binding.scanner.setFormats(Collections.singletonList(BarcodeFormat.EAN_13));
-        binding.scanner.setResultHandler(this::handleResult);
-    }
-    private void handleResult(Result result) {
-
-        String code = result.getText();
-        repository.downloadFood(code).observe(this, success -> {
-
-            if (success)onFoodDetected(code);
-            else onUnknownBarcode();
-
-        });
+        binding.scanner.setResultHandler(result -> model.handleBarcode(result.getText()));
     }
 
     @Override
@@ -83,23 +82,20 @@ public class ScannerFragment extends Fragment {
         super.onPause();
         binding.scanner.stopCamera();
     }
-    private void onFoodDetected(String code) {
+    private void onError(String message){
+        new AlertDialog.Builder(getContext())
+                .setTitle(message)
+                .setPositiveButton(android.R.string.ok,(dialog,which)->navigateUp())
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+    private void onDownloadedFood(String code ) {
+
         NavDirections action = ScannerFragmentDirections.actionScannerFragmentToFoodFragment(code);
         Navigation.findNavController(binding.getRoot()).navigate(action);
     }
-    private void onUnknownBarcode() {
-        new AlertDialog.Builder(getContext())
-                .setTitle(getString(R.string.unknown_barcode))
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> navigateUp())
-                .setIcon(android.R.drawable.ic_dialog_info)
-                .show();
-    }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.repository = new Repository(getContext());
-    }
+
 
 
 }
