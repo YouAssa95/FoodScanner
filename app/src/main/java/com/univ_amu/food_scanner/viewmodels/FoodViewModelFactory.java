@@ -15,11 +15,14 @@ public class FoodViewModelFactory implements ViewModelProvider.Factory {
         this.code = code;
     }
 
+
+
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(FoodViewModel.class)) {
             return (T) new FoodViewModel(application, code);
         }
+
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
 }

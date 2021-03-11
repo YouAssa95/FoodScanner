@@ -5,6 +5,7 @@
     <string name="composition">Composition</string>
     <string name="unknown_barcode">Code-barres inconnu </string>
     <string name="_100g_ml">_100g_ml</string>
+    <string name="ok">ok</string>
     <plurals name="days_ago">
         <item quantity="one">il y a un jour</item>
         <item quantity="other">il y a %d jours</item>

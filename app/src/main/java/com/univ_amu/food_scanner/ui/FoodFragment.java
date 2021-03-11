@@ -22,8 +22,7 @@ public class FoodFragment extends Fragment {
         binding.setLifecycleOwner(this);
         String code = FoodFragmentArgs.fromBundle(getArguments()).getCode();
 
-        FoodViewModel model = ViewModelProviders.of(this,
-                new FoodViewModelFactory(getActivity().getApplication(), code)).get(FoodViewModel.class);
+        FoodViewModel model = ViewModelProviders.of(this, new FoodViewModelFactory(getActivity().getApplication(), code)).get(FoodViewModel.class);
         binding.setModel(model);
 
         QuantityListAdapter adapter = new QuantityListAdapter();

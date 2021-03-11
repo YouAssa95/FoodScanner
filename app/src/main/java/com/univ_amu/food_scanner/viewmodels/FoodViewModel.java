@@ -22,7 +22,6 @@ public class FoodViewModel extends ViewModel {
         Context context = application.getApplicationContext();
         this.repository = new Repository(context);
         this.food = repository.getFood(code);
-        Log.i("FOOD_SCANNER", "Click on "+code);
         this.quantities = repository.getQuantities(code);
     }
 
